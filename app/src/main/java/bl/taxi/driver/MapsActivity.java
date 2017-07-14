@@ -54,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .addApi(LocationServices.API)
                 .enableAutoManage(this, this)
                 .build();
+
+        googleApiClient.connect();
     }
 
     @Override
@@ -82,7 +84,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         enableMyLocation();
 
-        googleApiClient.connect();
         mMap.setOnMyLocationButtonClickListener(this);
     }
 
@@ -94,7 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+                    Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.permission_rationale_location), true);
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
@@ -150,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
-                .newInstance(true).show(getSupportFragmentManager(), "dialog");
+                .newInstance(getString(R.string.location_permission_denied), true).show(getSupportFragmentManager(), "dialog");
     }
 
     @Override

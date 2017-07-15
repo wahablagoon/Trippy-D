@@ -34,24 +34,27 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    //Android support
     compile "com.android.support:appcompat-v7:$AndroidSupportVersion"
     compile "com.android.support:design:$AndroidSupportVersion"
-    //Multidex
-    //gson
+    compile "com.android.support:support-v4:$AndroidSupportVersion"
+    //Play Services
     compile "com.google.android.gms:play-services-location:$playServicesVersion"
     compile "com.google.android.gms:play-services-maps:$playServicesVersion"
     compile "com.google.android.gms:play-services-identity:$playServicesVersion"
     compile "com.google.android.gms:play-services-places:$playServicesVersion"
     compile "com.google.android.gms:play-services-base:$playServicesVersion"
-    //ButterKnife
+    //Multidex
     compile 'com.android.support:multidex:1.0.1'
+    //Retrofit2
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    //Map Utils
     compile 'com.google.maps.android:android-maps-utils:0.5'
+    //ButterKnife
     compile 'com.jakewharton:butterknife:8.7.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-maps:11.0.2'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
+    //Google phone no validation
+    compile 'com.googlecode.libphonenumber:libphonenumber:8.6.0'
+    testCompile 'junit:junit:4.12'
 }

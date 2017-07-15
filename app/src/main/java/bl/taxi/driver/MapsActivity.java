@@ -132,18 +132,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             enableMyLocation();
         } else {
             // Display the missing permission error dialog when the fragments resume.
-            mPermissionDenied = true;
+            showMissingPermissionError();
         }
     }
 
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-        if (mPermissionDenied) {
-            // Permission was not granted, display error dialog.
-            showMissingPermissionError();
-            mPermissionDenied = false;
-        }
     }
 
     /**

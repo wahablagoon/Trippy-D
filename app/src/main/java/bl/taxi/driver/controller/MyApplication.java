@@ -18,9 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MyApplication extends Application {
 
     private static Retrofit instance;
-    private static Retrofit cache_instance;
+    private static Retrofit cacheInstance;
     private static RetrofitAPI service;
-    private static RetrofitAPI cache_service;
+    private static RetrofitAPI cacheService;
     private static Cache cache;
 
     @Override
@@ -54,20 +54,20 @@ public class MyApplication extends Application {
                 .cache(cache)
                 .build();
 
-        cache_instance = new Retrofit.Builder()
+        cacheInstance = new Retrofit.Builder()
                 .baseUrl(Constants.Base_url)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        cache_service = cache_instance.create(RetrofitAPI.class);
+        cacheService = cacheInstance.create(RetrofitAPI.class);
     }
 
     public static RetrofitAPI getCacheService () {
-        if (cache_instance == null) {
+        if (cacheInstance == null) {
             setCacheInstance();
         }
-        return cache_service;
+        return cacheService;
     }
 
     @Override

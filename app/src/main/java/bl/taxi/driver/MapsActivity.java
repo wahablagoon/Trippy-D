@@ -31,26 +31,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     Location mCurrentLocation;
     int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int GOOGLE_DEFAULT_ZOOM = 15;
 
     /**
-     * Flag indicating whether a requested permission has been denied after returning in
-     * {@link #onRequestPermissionsResult(int, String[], int[])}.
+     * Flag indicating whether a permission is already requested or not
      */
-    private boolean mPermissionDenied = false;
+    private boolean mPermissionRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         //Connect Googleclient Location API
         googleApiClient = new GoogleApiClient.Builder(MapsActivity.this)
                 .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .enableAutoManage(this, this)
                 .build();
@@ -93,27 +88,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+
+            mPermissionRequested = true;
+
             // Permission to access the location is missing.
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.permission_rationale_location), true);
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
             if (mLastLocation != null) {
                 mCurrentLocation = mLastLocation;
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(mLastLocation.getLatitude(),
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),
                                 mLastLocation.getLongitude()),
-                        17));
+                        GOOGLE_DEFAULT_ZOOM));
             }
 
             LocationRequest mLocationRequest = new LocationRequest();
             mLocationRequest.setInterval(5000); //5 seconds
             mLocationRequest.setFastestInterval(3000); //3 seconds
             mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+            // Avoid Duplicate Listeners
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
 
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
         }
@@ -137,8 +138,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
+    protected void onResume() {
+        super.onResume();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            if (!mPermissionRequested) {
+                PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                        Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.permission_rationale_location), true);
+            } else
+                showMissingPermissionError();
+        }
     }
 
     /**
@@ -151,7 +162,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
@@ -159,7 +169,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -169,7 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Toast.makeText(MapsActivity.this, R.string.google_api_connection_fail, Toast.LENGTH_LONG).show();
     }
 
     @Override

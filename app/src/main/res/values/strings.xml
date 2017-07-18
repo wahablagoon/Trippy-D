@@ -6,4 +6,5 @@
     <string name="permission_rationale_location">Access to the location service is required to use the \'my location\' feature, which shows your current location on the map.</string>
     <string name="location_permission_denied">This app requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings.</string>
     <string name="permission_required_toast">Please provide, requested permission for this app.</string>
+    <string name="google_api_connection_fail">Sorry, Connection to Google play services is failed. Try restart app or check play services</string>
 </resources>

@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onResume();
 
         if (!InternetUtils.isOnline(getApplicationContext())) {
-
+            System.out.print("no net. ask to connect");
         }
 
         if (InternetUtils.isOnline(getApplicationContext())) {

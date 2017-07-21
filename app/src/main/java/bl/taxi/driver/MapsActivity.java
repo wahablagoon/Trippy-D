@@ -23,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 
+import bl.taxi.driver.utils.InternetUtils;
 import bl.taxi.driver.utils.PermissionUtils;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -38,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Flag indicating whether a permission is already requested or not
      */
-    private boolean mPermissionRequested = false;
+    private static boolean mPermissionRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        if (!mMap.getUiSettings().isMyLocationButtonEnabled() & (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            enableMyLocation();
+        }
+
         mMap.setOnMyLocationButtonClickListener(this);
     }
 
@@ -93,29 +99,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 == PackageManager.PERMISSION_GRANTED) {
 
             System.out.print("hello granted");
-            Log.i("hai", "hello granted");
             // Access to the location has been granted to the app.
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            if (mMap != null) {
 
-            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-            if (mLastLocation != null) {
-                mCurrentLocation = mLastLocation;
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),
-                                mLastLocation.getLongitude()),
-                        GOOGLE_DEFAULT_ZOOM));
+                Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+                if (mLastLocation != null) {
+                    mCurrentLocation = mLastLocation;
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),
+                                    mLastLocation.getLongitude()),
+                            GOOGLE_DEFAULT_ZOOM));
+                }
+
+                LocationRequest mLocationRequest = new LocationRequest();
+                mLocationRequest.setInterval(5000); //5 seconds
+                mLocationRequest.setFastestInterval(3000); //3 seconds
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+                // Avoid Duplicate Listeners
+                LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+
+                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
             }
-
-            LocationRequest mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(5000); //5 seconds
-            mLocationRequest.setFastestInterval(3000); //3 seconds
-            mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-            // Avoid Duplicate Listeners
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
 
         } else {
 
@@ -149,15 +157,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission to access the location is missing.
-            if (!mPermissionRequested) {
-                mPermissionRequested = true;
-                PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                        Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.permission_rationale_location), true);
-            } else
-                showMissingPermissionError();
+        if (!InternetUtils.isOnline(getApplicationContext())) {
+
+        }
+
+        if (InternetUtils.isOnline(getApplicationContext())) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission to access the location is missing.
+                if (!mPermissionRequested) {
+                    mPermissionRequested = true;
+                    PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                            Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.permission_rationale_location), true);
+                } else if (InternetUtils.isOnline(getApplicationContext())) {
+                    mMap.setMyLocationEnabled(false);
+                    mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                }
+            }
         }
     }
 

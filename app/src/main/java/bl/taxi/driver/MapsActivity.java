@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.mikepenz.materialdrawer.DrawerBuilder;
 
 import bl.taxi.driver.utils.InternetUtils;
 import bl.taxi.driver.utils.PermissionUtils;
@@ -45,8 +43,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        new DrawerBuilder().withActivity(this).build();
 
         //Connect Googleclient Location API
         googleApiClient = new GoogleApiClient.Builder(MapsActivity.this)
@@ -158,7 +154,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onResume();
 
         if (!InternetUtils.isOnline(getApplicationContext())) {
-            System.out.print("no net. ask to connect");
+
         }
 
         if (InternetUtils.isOnline(getApplicationContext())) {
@@ -212,6 +208,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-
+        mCurrentLocation = location;
     }
 }

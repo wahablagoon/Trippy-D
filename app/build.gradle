@@ -46,7 +46,8 @@ dependencies {
     compile "com.google.android.gms:play-services-places:$playServicesVersion"
     compile "com.google.android.gms:play-services-base:$playServicesVersion"
     //Multidex
-    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:multidex:1.0.2'
+    androidTestCompile 'com.android.support:multidex:1.0.2'
     //Retrofit2
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
@@ -57,9 +58,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
     //Google phone no validation
     compile 'com.googlecode.libphonenumber:libphonenumber:8.7.0'
-    // Material Drawer
-    compile('com.mikepenz:materialdrawer:5.9.4@aar') {
-        transitive = true
-    }
     testCompile 'junit:junit:4.12'
 }

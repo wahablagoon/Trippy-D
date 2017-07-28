@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
-def AndroidSupportVersion = '25.4.0'
-def playServicesVersion = '11.0.2'
+def AndroidSupportVersion = '26.0.0'
+def playServicesVersion = '11.0.4'
 
 repositories {
     jcenter()
@@ -10,12 +10,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "bl.taxi.driver"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
